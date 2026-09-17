@@ -73,8 +73,30 @@ class NJugsProblem(SearchProblem):
     i corresponds to the jug affected by the action
     j is a valid number only if the action is "pour" (i.e. pour from jug i into jug j). Otherwise it should be set to None
     """
-    def actions(state):
-        raise NotImplementedError
+    def actions(self, state):
+        #action_list carry (action, first_jug, second_jug)
+        actions_list = []
+
+        
+        for i in range(self.n):
+            #fill one jug which is not full
+            if state[i] < self.capacities[i]:
+                actions_list.append(("fill", i, None))
+            #empty on jug which is not empty
+            if state[i] != 0:
+                actions_list.append(("empty", i, None))
+
+        #pour first jug to second jug, i = first jug, j = second jug
+        for i in range(self.n):
+            for j in range(self.n):
+                #can't pour jug to itself
+                if i != j:
+                    #first jug can't be empty, second jug can't be full
+                    if state[i] != 0 & state[j] != self.capacities:
+                        actions_list.append(("pour", i, j))
+
+        return actions_list
+
 
     """
     Returns the state of the jugs after taking action (kind, i, j), without modifying the original state.
@@ -89,8 +111,29 @@ class NJugsProblem(SearchProblem):
     implementation of this function. You’ll likely want to make a 
     copy of the state first before making any changes.
     """
-    def succ(state, action):
-        raise NotImplementedError
+    def succ(self, state, action):
+
+        if(action[0] == "fill"):
+            #fill jug i to its capacity
+            new_state = list(state)
+            new_state[action[1]] = self.capacities[action[1]]
+            return tuple(new_state)
+
+        elif(action[0] == "empty"):
+            #empty jug i
+            new_state = list(state)
+            new_state[action[1]] = 0
+            return tuple(new_state)
+
+        elif(action[0] == "pour"):
+            #pour from jug i to jug j
+            new_state = list(state)
+            #calculate the amount of water to pour
+            pour_amount = min(new_state[action[1]], self.capacities[action[2]] - new_state[action[2]])
+            new_state[action[1]] -= pour_amount
+            new_state[action[2]] += pour_amount
+            return tuple(new_state)
+
 
 
     # ---- Helpers ----

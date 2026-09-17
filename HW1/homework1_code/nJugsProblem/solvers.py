@@ -130,7 +130,7 @@ class BFSSearch:
         self.problem = problem
 
     def solve(self):
-        raise NotImplementedError()
+        
 
 """
 Add an iterative implementation of DFS.
@@ -150,7 +150,7 @@ class DFSSearch:
         self.problem = problem
 
     def solve(self):
-        raise NotImplementedError()
+        
 
 
 
