@@ -1,6 +1,6 @@
 # ============================================================
 # 3 Jugs problem (or n jugs) definition
-# Authors: S. El Alaoui and ChatGPT 5
+# Authors: S. El Alaoui and ChatGPT 5 
 # ============================================================
 
 class SearchProblem:
@@ -129,12 +129,11 @@ class NJugsProblem(SearchProblem):
             #pour from jug i to jug j
             new_state = list(state)
             #calculate the amount of water to pour
+            #confirm which jug has more water and which jug has more capacity
             pour_amount = min(new_state[action[1]], self.capacities[action[2]] - new_state[action[2]])
             new_state[action[1]] -= pour_amount
             new_state[action[2]] += pour_amount
             return tuple(new_state)
-
-
 
     # ---- Helpers ----
 

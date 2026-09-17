@@ -128,9 +128,35 @@ returns a dictionary with the following informatin:
 class BFSSearch:
     def __init__(self, problem: SearchProblem):
         self.problem = problem
-
+        self.best_cost = math.inf
+        self.best_path = None
+        self.frontier = deque()
+        self.explored = set()
     def solve(self):
-        
+        # Initialize the BFS search
+        start = self.problem.start_state()
+        self.frontier.append((start, [], 0))
+        self.explored.add(str(start))
+
+        while self.frontier:
+            #pop/explore the first element from the queue
+            state, path, cost = self.frontier.popleft()
+
+            # Goal check
+            if self.problem.is_end(state):
+                if cost < self.best_cost:
+                    self.best_cost = cost
+                    self.best_path = path[:]  # copy
+                continue
+
+            # Expand
+            for action in self.problem.actions(state):
+                next_state = self.problem.succ(state, action)
+                key = str(next_state)
+                if key not in self.explored:
+                    self.explored.add(key)
+                    next_cost = cost + self.problem.cost(state, action)
+                    self.frontier.append((next_state, path + [next_state], next_cost))
 
 """
 Add an iterative implementation of DFS.
