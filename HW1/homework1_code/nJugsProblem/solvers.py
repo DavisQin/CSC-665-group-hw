@@ -173,13 +173,40 @@ returns a dictionary with the following informatin:
     expanded= # of state explored
 """
 class DFSSearch:
-
-
     def __init__(self, problem: SearchProblem):
         self.problem = problem
+        self.first_cost = math.inf
+        self.first_path = None
+        self.frontier = []
+        self.explored = set()
 
     def solve(self):
-        
+        start = self.problem.start_state()
+        self.frontier.append((start, [], 0))
+        self.explored.add(str(start))
+
+        while self.frontier:
+            #pop/explore the last element from the stack
+            state, path, cost = self.frontier.pop()
+
+            if self.problem.is_end(state):
+                if cost < self.first_cost:
+                    self.first_cost = cost
+                    self.first_path = [self.problem.start_state()] + path
+                return dict(
+                    best_cost=self.first_cost,
+                    best_path=self.first_path,
+                    found=True,
+                    expanded=len(self.explored),
+                )
+
+            for action in self.problem.actions(state):
+                next_state = self.problem.succ(state, action)
+                key = str(next_state)
+                if key not in self.explored:
+                    self.explored.add(key)
+                    next_cost = cost + self.problem.cost(state, action)
+                    self.frontier.append((next_state, path + [next_state], next_cost))
 
 
 
