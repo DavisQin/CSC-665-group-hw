@@ -127,7 +127,10 @@ returns a dictionary with the following informatin:
 """
 class BFSSearch:
     def __init__(self, problem: SearchProblem):
+        # Initialize the BFS search
+        #self.problem is for NjugsProblem, which is a subclass of SearchProblem
         self.problem = problem
+        #looking for minimum cost path and minium path, so we initialize best_cost to infinity and best_path to None
         self.best_cost = math.inf
         self.best_path = None
         self.frontier = deque()
