@@ -92,7 +92,7 @@ class NJugsProblem(SearchProblem):
                 #can't pour jug to itself
                 if i != j:
                     #first jug can't be empty, second jug can't be full
-                    if state[i] != 0 & state[j] != self.capacities:
+                    if state[i] != 0 and state[j] != self.capacities[j]:
                         actions_list.append(("pour", i, j))
 
         return actions_list

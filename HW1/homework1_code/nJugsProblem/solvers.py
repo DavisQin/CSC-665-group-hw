@@ -161,9 +161,16 @@ class BFSSearch:
                     next_cost = cost + self.problem.cost(state, action)
                     self.frontier.append((next_state, path + [next_state], next_cost))
 
+        return dict(
+            best_cost=self.best_cost,
+            best_path=[self.problem.start_state()] + (self.best_path or []),
+            found=(self.best_path is not None),
+            expanded=len(self.explored),
+        )
+
 """
 Add an iterative implementation of DFS.
-DFS explores along a path as deep as possible before backtracking 
+DFS explores along a path as deep as possible before backtracking
 and returns the first solution found, which may not be the shortest.
 
 returns a dictionary with the following informatin: 
@@ -208,5 +215,11 @@ class DFSSearch:
                     next_cost = cost + self.problem.cost(state, action)
                     self.frontier.append((next_state, path + [next_state], next_cost))
 
+        return dict(
+            best_cost=self.first_cost,
+            best_path=[self.problem.start_state()] + (self.first_path or []),
+            found=False,
+            expanded=len(self.explored),
+        )
 
 
