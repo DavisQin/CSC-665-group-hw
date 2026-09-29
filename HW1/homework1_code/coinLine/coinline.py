@@ -83,7 +83,6 @@ def succ(state, action):
 
     else:
         raise ValueError("Invalid side. Must be 'L' or 'R'.")
-
     picked_value = sum(picked)
 
     new_pScore = state.pScore
