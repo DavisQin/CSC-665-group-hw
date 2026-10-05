@@ -63,11 +63,10 @@ knowledge2 = And(
 # C says "A is a knight."
 # ----------------------------------------
 ##   write the statement(s) in PL 
-ASaidKnight = Symbol("A said 'I am a Knight")
 ASaidKnave = Symbol("A said 'I am a Knave'")
 statA = Or(
     And(ASaidKnave, AKnave),
-    And(ASaidKnight, AKnight)
+    And(Not(ASaidKnave), AKnight)
 )
 
 statB1 = ASaidKnave
