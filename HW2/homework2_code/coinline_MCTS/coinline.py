@@ -13,6 +13,7 @@
 
 from __future__ import annotations
 
+from logging import root
 import math
 import random
 from typing import Dict, Optional, Tuple, List
@@ -176,8 +177,14 @@ def terminal_reward(state, root_player, reward_mode="winloss"):
 
     Note: reward_mode is kept for compatibility, but only 'winloss' is supported.
     """
-    raise NotImplementedError
-
+    rootScore, oppScore = _root_scores(state, root_player)
+    if(rootScore > oppScore):
+        return 1
+    elif(rootScore == oppScore):
+        return 0
+    else:
+        return -1
+        
 
 def uct_score(child, parent_visits, c=math.sqrt(2)):
     """
@@ -185,19 +192,36 @@ def uct_score(child, parent_visits, c=math.sqrt(2)):
 
     child.W / child.N  +  c * sqrt( ln(parent_visits) / child.N )
     """
-    raise NotImplementedError
+    exploitation = child.W / child.N
+    exploration = c * math.sqrt( math.log(parent_visits) / child.N )
+    return exploitation + exploration
 
 
 def select_child_uct(node, c=math.sqrt(2)):
     """Return the child node with maximum UCT score."""
-    raise NotImplementedError
+    bestScore = -math.inf
+    bestChild = None
+    for child in node.children.values():
+        score = uct_score(child,node.N,c)
+        if(score > bestScore):
+            bestScore = score
+            bestChild = child
+
+    return bestChild
 
 
 def expand(node):
     """
     Expand one untried action from node and return the new child node.
     """
-    raise NotImplementedError
+    untried_action = node.untried_actions.pop()
+    new_state = succ(node.state, untried_action)
+
+    child = MCTSNode(new_state, node, untried_action)
+    node.children[untried_action] = child
+
+    return child
+
 
 
 def rollout(state):
@@ -205,21 +229,43 @@ def rollout(state):
     Default rollout policy: play uniformly random legal actions until terminal.
     Must NOT mutate the input state; rely on succ(state, action).
     """
-    raise NotImplementedError
+    "Start State"
+    current_state = state
+
+    while True:
+        legal_actions = actions(current_state)
+        if not legal_actions:
+            break
+        action = random.choice(legal_actions)
+        current_state = succ(current_state, action)
+
+    return current_state
 
 
 def backpropagate(node, reward):
     """
     Backpropagate reward up to the root, updating visit counts and total values.
     """
-    raise NotImplementedError
+    current_node = node
 
+    while current_node is not None:
+        current_node.N += 1
+        current_node.W += reward
+        current_node = current_node.parent
 
 def best_action(root):
     """
     Return the action from root corresponding to the most-visited child (or highest mean value).
     """
-    raise NotImplementedError
+    best_visits = -1
+    b_action = None
+    for action, child in root.children.items():
+        if child.N > best_visits:
+            best_visits = child.N
+            b_action = action
+
+    return b_action
+        
 
 
 def mcts(state, budget=2000, reward_mode="winloss", c=math.sqrt(2)):
@@ -231,4 +277,26 @@ def mcts(state, budget=2000, reward_mode="winloss", c=math.sqrt(2)):
 
     Returns: an action in actions(state), or None if state is terminal.
     """
-    raise NotImplementedError
+    if not actions(state):
+        return None
+
+    root = MCTSNode(state)
+    root_player = state.turn
+
+    for _ in range(budget):
+        node = root
+
+        while actions(node.state) and not node.untried_actions:
+            node = select_child_uct(node, c)
+
+        if node.untried_actions:
+            node = expand(node)
+
+        final_state = rollout(node.state)
+
+        reward = terminal_reward(final_state,root_player,reward_mode)
+
+        backpropagate(node, reward)
+
+    return best_action(root)
+
