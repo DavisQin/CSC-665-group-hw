@@ -80,6 +80,7 @@ knowledge3 = And(
     Xor(BKnight, BKnave),
     Xor(CKnight, CKnave),
 
+    #A's statement
     Implication(AKnight, statA),
     Implication(AKnave, Not(statA)),
 
