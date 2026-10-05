@@ -115,7 +115,9 @@ def minimax(state: State, is_maximizing: bool):
     """
     if terminal(state):
         p1, p2 = utility(state)
-        return (p2 - p1 if is_maximizing else p1 - p2), None
+        #because in benchmark.py line 67 '_, action = cl.minimax(state, is_maximizing=True)', minmax is always AI's turn
+        #previous:return (p2 - p1 if is_maximizing else p1 - p2), None
+        return p2 - p1, None
 
     best_val = float("-inf") if is_maximizing else float("inf")
     best_action = None
@@ -185,7 +187,6 @@ def terminal_reward(state, root_player, reward_mode="winloss"):
     else:
         return -1
         
-
 def uct_score(child, parent_visits, c=math.sqrt(2)):
     """
     UCT score for selection.
@@ -266,7 +267,6 @@ def best_action(root):
 
     return b_action
         
-
 
 def mcts(state, budget=2000, reward_mode="winloss", c=math.sqrt(2)):
     """
