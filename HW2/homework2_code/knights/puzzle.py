@@ -17,10 +17,14 @@ CKnave = Symbol("C is a Knave")
 # A says "I am both a knight and a knave."
 # ----------------------------------------
 ##   write the statement(s) in PL 
-stat = None
+stat = And(AKnight, AKnave)
 ##   Fill in the knowledge base
 knowledge1 = And(
     # TODO
+    # No one can be both a knight and a knave
+    Xor(AKnight, AKnave),
+    Implication(AKnight, stat),
+    Implication(AKnave, Not(stat))
 )
 # ----------------------------------------
 
@@ -29,10 +33,26 @@ knowledge1 = And(
 # B says "We are of different kinds."
 # ----------------------------------------
 ##   write the statement(s) in PL 
-stat = None
+statA = Or(
+    And(AKnight, BKnight),
+    And(AKnave, BKnave)
+)
+
+statB = Or(
+    And(AKnight, BKnave),
+    And(AKnave, BKnight)
+)
 ##   Fill in the knowledge base
 knowledge2 = And(
     # TODO
+    Xor(AKnight, AKnave),
+    Xor(BKnight, BKnave),
+
+    Implication(AKnight, statA),
+    Implication(AKnave, Not(statA)),
+
+    Implication(BKnight, statB),
+    Implication(BKnave, Not(statB))
 )
 # ----------------------------------------
 
@@ -43,10 +63,38 @@ knowledge2 = And(
 # C says "A is a knight."
 # ----------------------------------------
 ##   write the statement(s) in PL 
-stat = None
+ASaidKnight = Symbol("A said 'I am a Knight")
+ASaidKnave = Symbol("A said 'I am a Knave'")
+statA = Or(
+    And(ASaidKnave, AKnave),
+    And(ASaidKnight, AKnight)
+)
+
+statB1 = ASaidKnave
+statB2 = CKnave
+
+statC = AKnight
 ##   Fill in the knowledge base
 knowledge3 = And(
     # TODO
+    Xor(AKnight, AKnave),
+    Xor(BKnight, BKnave),
+    Xor(CKnight, CKnave),
+
+    Implication(AKnight, statA),
+    Implication(AKnave, Not(statA)),
+
+    # B's first statement
+    Implication(BKnight, statB1),
+    Implication(BKnave, Not(statB1)),
+
+    # B's second statement
+    Implication(BKnight, statB2),
+    Implication(BKnave, Not(statB2)),
+
+    # C's statement
+    Implication(CKnight, statC),
+    Implication(CKnave, Not(statC))
 )
 # ----------------------------------------
 
