@@ -157,6 +157,43 @@ class Or(Sentence):
     def symbols(self):
         return set.union(*[disjunct.symbols() for disjunct in self.disjuncts])
 
+# XOR
+class Xor(Sentence):
+
+    def __init__(self, left, right):
+        Sentence.validate(left)
+        Sentence.validate(right)
+        self.left = left
+        self.right = right
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, Xor)
+            and self.left == other.left
+            and self.right == other.right
+        )
+
+    def __hash__(self):
+        return hash(("xor", hash(self.left), hash(self.right)))
+
+    def __repr__(self):
+        return f"Xor({self.left}, {self.right})"
+
+    def evaluate(self, model):
+        return (
+            (not self.left.evaluate(model) and self.right.evaluate(model))
+            or
+            (self.left.evaluate(model) and not self.right.evaluate(model))
+        )
+
+    def formula(self):
+        left = Sentence.parenthesize(self.left.formula())
+        right = Sentence.parenthesize(self.right.formula())
+        return f"{left} ⊕ {right}"
+
+    def symbols(self):
+        return set.union(self.left.symbols(), self.right.symbols())
+
 
 class Implication(Sentence):
     def __init__(self, antecedent, consequent):
